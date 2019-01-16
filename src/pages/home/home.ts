@@ -1,5 +1,10 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
+import { UbicacionProvider } from '../../providers/ubicacion/ubicacion';
+import { LoginPage } from '../login/login';
+import { UsuarioProvider } from '../../providers/usuario/usuario';
+
+
 
 @Component({
   selector: 'page-home',
@@ -7,7 +12,32 @@ import { NavController } from 'ionic-angular';
 })
 export class HomePage {
 
-  constructor(public navCtrl: NavController) {
+  lat: number;
+  lng: number;
+
+  user: any = {};
+
+  constructor(public navCtrl: NavController,
+              public _ubicacionProv: UbicacionProvider,
+              public _usuarioProv: UsuarioProvider) {
+
+    this._ubicacionProv.iniciarGeoLocalizacion();
+    this._ubicacionProv.inicializarEstilista();
+
+    this._ubicacionProv.estilista.valueChanges()
+              .subscribe( data => {
+          this.user = data;
+        });
+
+  }
+
+
+  salir() {
+
+    this._ubicacionProv.detenerUbicacion();
+    this._usuarioProv.borrarUsuario();
+
+    this.navCtrl.setRoot( LoginPage );
 
   }
 
